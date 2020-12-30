@@ -53,7 +53,7 @@ export default class UsersDAO {
           password: userInfo.password,
           name: userInfo.name,
         },
-        { w: 1, j: true },
+        { w: "majority", j: true },
       )
       return { success: true }
     } catch (e) {
