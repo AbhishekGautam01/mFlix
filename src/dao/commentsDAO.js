@@ -43,10 +43,13 @@ export default class CommentsDAO {
    */
   static async addComment(movieId, user, comment, date) {
     try {
-      // TODO Ticket: Create/Update Comments
-      // Construct the comment document to be inserted into MongoDB.
-      const commentDoc = { someField: "someValue" }
-
+      const commentDoc = {
+        name: user.name,
+        email: user.email,
+        movie_id: ObjectId(movieId),
+        text: comment,
+        date: date,
+      }
       return await comments.insertOne(commentDoc)
     } catch (e) {
       console.error(`Unable to post comment: ${e}`)
@@ -66,14 +69,18 @@ export default class CommentsDAO {
    */
   static async updateComment(commentId, userEmail, text, date) {
     try {
-      // TODO Ticket: Create/Update Comments
-      // Use the commentId and userEmail to select the proper comment, then
-      // update the "text" and "date" fields of the selected comment.
       const updateResponse = await comments.updateOne(
-        { someField: "someValue" },
-        { $set: { someOtherField: "someOtherValue" } },
+        {
+          _id: ObjectId(commentId),
+          email: userEmail,
+        },
+        {
+          $set: {
+            text,
+            date,
+          },
+        },
       )
-
       return updateResponse
     } catch (e) {
       console.error(`Unable to update comment: ${e}`)
@@ -82,20 +89,10 @@ export default class CommentsDAO {
   }
 
   static async deleteComment(commentId, userEmail) {
-    /**
-    Ticket: Delete Comments
-
-    Implement the deleteOne() call in this method.
-
-    Ensure the delete operation is limited so only the user can delete their own
-    comments, but not anyone else's comments.
-    */
-
     try {
-      // TODO Ticket: Delete Comments
-      // Use the userEmail and commentId to delete the proper comment.
       const deleteResponse = await comments.deleteOne({
         _id: ObjectId(commentId),
+        email: userEmail,
       })
 
       return deleteResponse
