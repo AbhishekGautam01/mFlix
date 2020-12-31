@@ -103,21 +103,13 @@ export default class CommentsDAO {
   }
 
   static async mostActiveCommenters() {
-    /**
-    Ticket: User Report
-
-    Build a pipeline that returns the 20 most frequent commenters on the MFlix
-    site. You can do this by counting the number of occurrences of a user's
-    email in the `comments` collection.
-    */
     try {
-      // TODO Ticket: User Report
-      // Return the 20 users who have commented the most on MFlix.
-      const pipeline = []
+      const groupStage = { $group: { _id: "$email", count: { $sum: 1 } } }
+      const sortStage = { $sort: { count: -1 } }
+      const limitStage = { $limit: 20 }
+      const pipeline = [groupStage, sortStage, limitStage]
 
-      // TODO Ticket: User Report
-      // Use a more durable Read Concern here to make sure this data is not stale.
-      const readConcern = comments.readConcern
+      const readConcern = { level: "majority" }
 
       const aggregateResult = await comments.aggregate(pipeline, {
         readConcern,
